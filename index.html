@@ -3,10 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat App Status</title>
+    <title>Multiplayer Chat</title>
 </head>
 <body>
-    <h1>Backend is running successfully!</h1>
-    <p>This is the start of the multiplayer chat application.</p>
+    <header>
+        <h1>Multiplayer Chat</h1>
+    </header>
+
+    <!-- Room & Identity Controls -->
+    <section id="room-section">
+        <form id="join-form">
+            <label for="username-input">Username:</label>
+            <input type="text" id="username-input" placeholder="e.g. Alice" required>
+
+            <label for="room-input">Room:</label>
+            <input type="text" id="room-input" placeholder="e.g. general" required>
+
+            <button type="submit" id="join-btn">Join Room</button>
+            <button type="button" id="leave-btn" disabled>Leave Room</button>
+        </form>
+        <p id="connection-status" class="status">Status: Disconnected</p>
+    </section>
+
+    <!-- Message Display Area -->
+    <section id="chat-section">
+        <ul id="messages-list" class="messages-list">
+            <!-- Messages will be appended here as <li> items -->
+        </ul>
+
+        <!-- Message Input & Send -->
+        <form id="message-form">
+            <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" disabled required>
+            <button type="submit" id="send-btn" disabled>Send</button>
+        </form>
+    </section>
 </body>
 </html>
