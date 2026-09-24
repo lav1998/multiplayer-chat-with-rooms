@@ -37,5 +37,89 @@
             <button type="submit" id="send-btn" disabled>Send</button>
         </form>
     </section>
+
+    <script>
+        // DOM Elements
+        const joinForm = document.getElementById('join-form');
+        const usernameInput = document.getElementById('username-input');
+        const roomInput = document.getElementById('room-input');
+        const joinBtn = document.getElementById('join-btn');
+        const leaveBtn = document.getElementById('leave-btn');
+        const connectionStatus = document.getElementById('connection-status');
+        
+        const messagesList = document.getElementById('messages-list');
+        const messageForm = document.getElementById('message-form');
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        let ws = null;
+
+        function addMessage(text) {
+            const li = document.createElement('li');
+            li.textContent = text;
+            messagesList.appendChild(li);
+        }
+
+        joinForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Connect to WebSocket
+            const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+            const wsUrl = `${protocol}//${window.location.host}/ws`;
+            
+            ws = new WebSocket(wsUrl);
+
+            // Connection opened
+            ws.onopen = () => {
+                connectionStatus.textContent = "Status: Connected";
+                joinBtn.disabled = true;
+                usernameInput.disabled = true;
+                roomInput.disabled = true;
+                leaveBtn.disabled = false;
+                
+                messageInput.disabled = false;
+                sendBtn.disabled = false;
+                
+                addMessage("[System] Connected to server");
+            };
+
+            // Listen for messages
+            ws.onmessage = (event) => {
+                addMessage(event.data);
+            };
+
+            // Connection closed
+            ws.onclose = () => {
+                connectionStatus.textContent = "Status: Disconnected";
+                joinBtn.disabled = false;
+                usernameInput.disabled = false;
+                roomInput.disabled = false;
+                leaveBtn.disabled = true;
+                
+                messageInput.disabled = true;
+                sendBtn.disabled = true;
+                
+                addMessage("[System] Disconnected from server");
+                ws = null;
+            };
+        });
+
+        // Leave Room / Disconnect
+        leaveBtn.addEventListener('click', () => {
+            if (ws) {
+                ws.close();
+            }
+        });
+
+        // Send Message
+        messageForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (ws && messageInput.value) {
+                const msg = messageInput.value;
+                ws.send(msg);
+                messageInput.value = '';
+            }
+        });
+    </script>
 </body>
 </html>
