@@ -85,7 +85,21 @@
 
             // Listen for messages
             ws.onmessage = (event) => {
-                addMessage(event.data);
+                const data = JSON.parse(event.data);
+                
+                // Format timestamp locally
+                const date = new Date(data.timestamp);
+                const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                
+                // Construct display string
+                let displayText = `[${timeStr}] `;
+                if (data.type === 'system') {
+                    displayText += `* ${data.text} *`;
+                } else {
+                    displayText += `${data.username}: ${data.text}`;
+                }
+                
+                addMessage(displayText);
             };
 
             // Connection closed
@@ -113,8 +127,8 @@
         // Send Message
         messageForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            if (ws && messageInput.value) {
-                const msg = messageInput.value;
+            const msg = messageInput.value.trim();
+            if (ws && msg) {
                 ws.send(msg);
                 messageInput.value = '';
             }

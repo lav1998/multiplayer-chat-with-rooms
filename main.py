@@ -2,6 +2,7 @@ from typing import Dict, Set
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 import os
+from datetime import datetime, timezone
 
 app = FastAPI()
 
@@ -23,12 +24,12 @@ class ConnectionManager:
             if not self.rooms[room]:
                 del self.rooms[room]
 
-    async def broadcast(self, message: str, room: str):
+    async def broadcast(self, message: dict, room: str):
         if room in self.rooms:
             dead_connections = set()
             for connection in self.rooms[room]:
                 try:
-                    await connection.send_text(message)
+                    await connection.send_json(message)
                 except Exception:
                     dead_connections.add(connection)
             
@@ -48,11 +49,35 @@ async def read_root():
 @app.websocket("/ws/{room}/{username}")
 async def websocket_endpoint(websocket: WebSocket, room: str, username: str):
     await manager.connect(websocket, room)
-    await manager.broadcast(f"[System] {username} joined the room.", room)
+    
+    join_msg = {
+        "type": "system",
+        "username": "System",
+        "text": f"{username} joined the room.",
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+    await manager.broadcast(join_msg, room)
+    
     try:
         while True:
             data = await websocket.receive_text()
-            await manager.broadcast(f"{username}: {data}", room)
+            cleaned_data = data.strip()
+            if not cleaned_data:
+                continue
+            
+            chat_msg = {
+                "type": "chat",
+                "username": username,
+                "text": cleaned_data,
+                "timestamp": datetime.now(timezone.utc).isoformat()
+            }
+            await manager.broadcast(chat_msg, room)
     except WebSocketDisconnect:
         manager.disconnect(websocket, room)
-        await manager.broadcast(f"[System] {username} left the room.", room)
+        leave_msg = {
+            "type": "system",
+            "username": "System",
+            "text": f"{username} left the room.",
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+        await manager.broadcast(leave_msg, room)
