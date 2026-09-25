@@ -66,3 +66,6 @@ To evolve this prototype into a production-ready application, the following arch
 2. **Persistence:** If retrieving historical chat logs is required, incoming messages must be saved to a database (e.g., PostgreSQL, Cassandra, or MongoDB) asynchronously before or while being broadcast.
 3. **Authentication & Authorization:** The current system blindly trusts the username in the URL. A production system requires JWT tokens or session cookies to verify the identity of the WebSocket connector.
 4. **Monitoring & Rate Limiting:** Introduce connection limits, rate limiting (to prevent message spam), and monitoring (e.g., Prometheus) to track active socket counts and server health.
+
+---
+*Made by Lav Ram Gabri using Google Antigravity*
