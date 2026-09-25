@@ -25,8 +25,15 @@ class ConnectionManager:
 
     async def broadcast(self, message: str, room: str):
         if room in self.rooms:
+            dead_connections = set()
             for connection in self.rooms[room]:
-                await connection.send_text(message)
+                try:
+                    await connection.send_text(message)
+                except Exception:
+                    dead_connections.add(connection)
+            
+            for dead in dead_connections:
+                self.disconnect(dead, room)
 
 manager = ConnectionManager()
 
