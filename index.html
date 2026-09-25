@@ -65,13 +65,15 @@
             
             // Connect to WebSocket
             const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-            const wsUrl = `${protocol}//${window.location.host}/ws`;
+            const room = encodeURIComponent(roomInput.value);
+            const username = encodeURIComponent(usernameInput.value);
+            const wsUrl = `${protocol}//${window.location.host}/ws/${room}/${username}`;
             
             ws = new WebSocket(wsUrl);
 
             // Connection opened
             ws.onopen = () => {
-                connectionStatus.textContent = "Status: Connected";
+                connectionStatus.textContent = `Status: Connected to ${roomInput.value} as ${usernameInput.value}`;
                 joinBtn.disabled = true;
                 usernameInput.disabled = true;
                 roomInput.disabled = true;
@@ -79,8 +81,6 @@
                 
                 messageInput.disabled = false;
                 sendBtn.disabled = false;
-                
-                addMessage("[System] Connected to server");
             };
 
             // Listen for messages
@@ -99,7 +99,6 @@
                 messageInput.disabled = true;
                 sendBtn.disabled = true;
                 
-                addMessage("[System] Disconnected from server");
                 ws = null;
             };
         });

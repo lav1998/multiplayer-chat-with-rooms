@@ -1,8 +1,34 @@
+from typing import Dict, Set
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 import os
 
 app = FastAPI()
+
+class ConnectionManager:
+    def __init__(self):
+        # Maps room names to sets of active WebSocket connections
+        self.rooms: Dict[str, Set[WebSocket]] = {}
+
+    async def connect(self, websocket: WebSocket, room: str):
+        await websocket.accept()
+        if room not in self.rooms:
+            self.rooms[room] = set()
+        self.rooms[room].add(websocket)
+
+    def disconnect(self, websocket: WebSocket, room: str):
+        if room in self.rooms:
+            self.rooms[room].discard(websocket)
+            # Optionally clean up empty rooms
+            if not self.rooms[room]:
+                del self.rooms[room]
+
+    async def broadcast(self, message: str, room: str):
+        if room in self.rooms:
+            for connection in self.rooms[room]:
+                await connection.send_text(message)
+
+manager = ConnectionManager()
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
@@ -12,12 +38,14 @@ async def read_root():
         html_content = f.read()
     return HTMLResponse(content=html_content)
 
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
+@app.websocket("/ws/{room}/{username}")
+async def websocket_endpoint(websocket: WebSocket, room: str, username: str):
+    await manager.connect(websocket, room)
+    await manager.broadcast(f"[System] {username} joined the room.", room)
     try:
         while True:
             data = await websocket.receive_text()
-            await websocket.send_text(f"Echo: {data}")
+            await manager.broadcast(f"{username}: {data}", room)
     except WebSocketDisconnect:
-        print("Client disconnected")
+        manager.disconnect(websocket, room)
+        await manager.broadcast(f"[System] {username} left the room.", room)
