@@ -10,7 +10,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
-    <artifactId>multiplayer-chat-with-rooms</artifactId>
+    <artifactId>multiplayer-chat-with-rooms-java</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>multiplayer-chat</name>
     <description>Multiplayer Chat with Rooms (Java/Spring Boot)</description>
