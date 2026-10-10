@@ -2,6 +2,8 @@
 
 The following prompts document the incremental, step-by-step development process used with the AI assistant to build this application.
 
+## Python
+
 1. `I need to build a small interview assignment: a multiplayer chat application where users can join rooms and exchange messages in real time. I want to build this incrementally rather than having you generate the entire application at once. Let's start with the simplest possible working Python web application. Use FastAPI and Uvicorn and serve a very basic HTML page from the application. For now, I only want to prove that the Python backend starts successfully and the browser can reach it. Please create the minimal project structure and code needed for that. Don't implement chat, WebSockets, rooms, authentication, databases, or styling yet. After making the changes, tell me what you created and how I can run it locally. Don't commit anything to Git.`
 2. `The basic application is running successfully. Before I make the first commit, add a .gitignore so generated files such as __pycache__, other files, and the local virtual environment are not committed. Don't change any application code + don't commit anything.`
 3. `Great. Next now. LEt's move to frontend. What is the simplest browser UI we need before connecting it to the backend?`
@@ -18,3 +20,7 @@ The following prompts document the incremental, step-by-step development process
 14. `Yes. Implement the validation on both sides. Frontend: - Trim leading and trailing whitespace before sending. - Do not send the message if the resulting text is empty. Backend: - Strip leading and trailing whitespace from received messages...`
 15. `Lovely. the chat functionality is working and tested. Let's do one small UI polish pass before we move on to testing and documentation. Add minimal CSS to make the chat application clean and easy to demo: - centered chat - clear room/username controls...`
 16. `I want to prepare the repository for submission. Based on the current code in main.py and index.html, create two documentation files: 1. README.md... 2. PROMPTS.md...`
+
+## Java
+
+17. `Ok. Since the project has been git cloned already, Based on the above suggestions - 1. Use Spring Boot as the framework for Websocket approach. 2. I want to retain the index.html as it is, and only the backend must be changed to a very simple java / spring boot implementation. Always ask me after making code changes if the change needs to be committed. If yes, add a meaningful message to the commit. Do NOT commit on your own. In the PROMPTS.md retain all the points as is, make sure you segregate the previous 16 points under a Python version. Add the prompts to PROMPTS.md whenever I give you a green flag to commit - Keep the new prompts under a new sub heading - Java. DO NOT Hallucinate.`

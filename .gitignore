@@ -47,3 +47,12 @@ venv.bak/
 # Operating System files
 .DS_Store
 Thumbs.db
+
+# Java / Maven
+target/
+*.class
+*.jar
+*.war
+.settings/
+.classpath
+.project
